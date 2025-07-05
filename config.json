@@ -1,0 +1,43 @@
+{
+  "FileSplitter": {
+    "DefaultSettings": {
+      "SplitKeyword": "M30",
+      "OutputFileExtension": ".nc",
+      "ProgramNumberPattern": "^O(\\d+)",
+      "AddEndOfLine": false,
+      "Encoding": "UTF-8",
+      "BufferSize": 8192,
+      "MaxConcurrentFileOperations": 10
+    },
+    "GUI": {
+      "DefaultOutputFolderName": "Split_Output",
+      "LogMaxLines": 1000,
+      "ProgressUpdateInterval": 10000,
+      "AutoSuggestOutputFolder": true
+    },
+    "Console": {
+      "DisplayProgressEveryNLines": 10000,
+      "ShowDetailedSummary": true,
+      "PauseOnError": true
+    },
+    "Advanced": {
+      "AlternativePatterns": [
+        "^N(\\d+)",
+        "^%(\\w+)",
+        "^:(\\d+)"
+      ],
+      "SupportedEncodings": [
+        "UTF-8",
+        "ASCII",
+        "UTF-16",
+        "ISO-8859-1"
+      ],
+      "CustomKeywords": [
+        "M30",
+        "M02",
+        "END",
+        "%"
+      ]
+    }
+  }
+} 

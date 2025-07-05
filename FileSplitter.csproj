@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>FileSplitter</AssemblyName>
+    <RootNamespace>FileSplitter</RootNamespace>
+    <Version>1.0.0</Version>
+    <Description>A program to split files based on specific keywords</Description>
+    <Authors>FileSplitter Team</Authors>
+    <Company>FileSplitter</Company>
+    <Product>FileSplitter</Product>
+  </PropertyGroup>
+
+</Project> 
