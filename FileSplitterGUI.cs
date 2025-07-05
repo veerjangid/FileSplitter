@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Text.Json;
 
 namespace FileSplitter
 {
@@ -9,7 +10,7 @@ namespace FileSplitter
         private static readonly string ProgramNumberPattern = @"^O(\d+)";
 
         private TextBox txtInputFile;
-        private TextBox txtKeyword;
+        private ComboBox cboKeyword;
         private TextBox txtOutputFolder;
         private CheckBox chkAddEndOfLine;
         private Button btnBrowseInput;
@@ -22,6 +23,54 @@ namespace FileSplitter
         public FileSplitterForm()
         {
             InitializeComponent();
+            LoadKeywordsFromConfig();
+        }
+
+        private void LoadKeywordsFromConfig()
+        {
+            try
+            {
+                var configPath = Path.Combine(Application.StartupPath, "config.json");
+                if (File.Exists(configPath))
+                {
+                    var jsonString = File.ReadAllText(configPath);
+                    var config = JsonDocument.Parse(jsonString);
+                    
+                    if (config.RootElement.TryGetProperty("FileSplitter", out var fileSplitterSection) &&
+                        fileSplitterSection.TryGetProperty("DefaultSettings", out var defaultSettings) &&
+                        defaultSettings.TryGetProperty("AvailableKeywords", out var keywords))
+                    {
+                        cboKeyword.Items.Clear();
+                        foreach (var keyword in keywords.EnumerateArray())
+                        {
+                            cboKeyword.Items.Add(keyword.GetString());
+                        }
+                        
+                        // Set default keyword
+                        if (defaultSettings.TryGetProperty("SplitKeyword", out var defaultKeyword))
+                        {
+                            cboKeyword.Text = defaultKeyword.GetString();
+                        }
+                        else if (cboKeyword.Items.Count > 0)
+                        {
+                            cboKeyword.SelectedIndex = 0;
+                        }
+                    }
+                }
+                else
+                {
+                    // Fallback keywords if config file doesn't exist
+                    cboKeyword.Items.AddRange(new string[] { "M30", "M02", "M01", "M00", "END", "ENDSUB", "%", "G28", "REWIND", "STOP" });
+                    cboKeyword.Text = DefaultKeyword;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Fallback to default keywords on error
+                cboKeyword.Items.AddRange(new string[] { "M30", "M02", "M01", "M00", "END", "ENDSUB", "%", "G28", "REWIND", "STOP" });
+                cboKeyword.Text = DefaultKeyword;
+                LogMessage($"Warning: Could not load keywords from config: {ex.Message}");
+            }
         }
 
         private void InitializeComponent()
@@ -59,7 +108,7 @@ namespace FileSplitter
             };
             btnBrowseInput.Click += BtnBrowseInput_Click;
 
-            // Keyword section
+            // Keyword section - Changed from TextBox to ComboBox
             var lblKeyword = new Label
             {
                 Text = "Split Keyword:",
@@ -68,11 +117,11 @@ namespace FileSplitter
                 TextAlign = ContentAlignment.MiddleLeft
             };
 
-            txtKeyword = new TextBox
+            cboKeyword = new ComboBox
             {
                 Location = new Point(130, 60),
                 Size = new Size(150, 23),
-                Text = DefaultKeyword
+                DropDownStyle = ComboBoxStyle.DropDownList
             };
 
             // End of line option
@@ -161,7 +210,7 @@ namespace FileSplitter
             // Add all controls to form
             this.Controls.AddRange(new Control[] {
                 lblInputFile, txtInputFile, btnBrowseInput,
-                lblKeyword, txtKeyword, chkAddEndOfLine,
+                lblKeyword, cboKeyword, chkAddEndOfLine,
                 lblOutputFolder, txtOutputFolder, btnBrowseOutput,
                 btnProcess, progressBar, lblStatus,
                 lblLog, txtLog
@@ -252,7 +301,7 @@ namespace FileSplitter
                 lblStatus.Text = "Processing...";
                 txtLog.Clear();
 
-                await ProcessFileAsync(txtInputFile.Text, txtKeyword.Text.Trim(),
+                await ProcessFileAsync(txtInputFile.Text, cboKeyword.Text.Trim(),
                                      txtOutputFolder.Text, chkAddEndOfLine.Checked);
 
                 lblStatus.Text = "Completed";
@@ -289,7 +338,7 @@ namespace FileSplitter
                 return false;
             }
 
-            if (string.IsNullOrEmpty(txtKeyword.Text?.Trim()))
+            if (string.IsNullOrEmpty(cboKeyword.Text?.Trim()))
             {
                 MessageBox.Show("Please enter a keyword to split on.", "Validation Error",
                               MessageBoxButtons.OK, MessageBoxIcon.Warning);

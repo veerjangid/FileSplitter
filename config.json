@@ -7,7 +7,19 @@
       "AddEndOfLine": false,
       "Encoding": "UTF-8",
       "BufferSize": 8192,
-      "MaxConcurrentFileOperations": 10
+      "MaxConcurrentFileOperations": 10,
+      "AvailableKeywords": [
+        "M30",
+        "M02",
+        "M01",
+        "M00",
+        "END",
+        "ENDSUB",
+        "%",
+        "G28",
+        "REWIND",
+        "STOP"
+      ]
     },
     "GUI": {
       "DefaultOutputFolderName": "Split_Output",
@@ -31,12 +43,6 @@
         "ASCII",
         "UTF-16",
         "ISO-8859-1"
-      ],
-      "CustomKeywords": [
-        "M30",
-        "M02",
-        "END",
-        "%"
       ]
     }
   }
