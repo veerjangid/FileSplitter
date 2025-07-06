@@ -272,7 +272,10 @@ namespace FileSplitter
                 var fileName = $"O{program.ProgramNumber}.nc";
                 var filePath = Path.Combine(outputFolder, fileName);
 
-                await File.WriteAllTextAsync(filePath, program.Content, Encoding.UTF8);
+                // Add % at the beginning and end of the program
+                var content = $"%\r\n{program.Content.TrimEnd()}\r\n%\r\n";
+                
+                await File.WriteAllTextAsync(filePath, content, Encoding.UTF8);
             }
             catch (Exception ex)
             {
